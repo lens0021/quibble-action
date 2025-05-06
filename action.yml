@@ -27,6 +27,7 @@ runs:
     # /home/runner/docker-images/                       Docker images which exported with docker-save command
     # $GITHUB_WORKSPACE/.github/workflows/dependencies  Dependency extensions and skins
     - name: Set up
+      shell: bash
       run: |
         if [ -e skin.json ]; then
           echo "TYPE=skin" >> $GITHUB_ENV
@@ -81,6 +82,7 @@ runs:
         path: /home/runner/docker-images/${{ env.QUIBBLE_DOCKER_IMAGE }}
         key: ${{ env.QUIBBLE_DOCKER_IMAGE }}:${{ env.QUIBBLE_DOCKER_LATEST_TAG }}
     - name: Load or pull quibble docker image
+      shell: bash
       run: |
         if [ -f /home/runner/docker-images/"${QUIBBLE_DOCKER_IMAGE}" ]; then
           docker load -i /home/runner/docker-images/"${QUIBBLE_DOCKER_IMAGE}"
@@ -101,6 +103,7 @@ runs:
         key: ${{ env.PHAN_DOCKER_IMAGE }}:${{ env.PHAN_DOCKER_LATEST_TAG }}
     - name: Load or pull quibble coverage docker image
       if: matrix.stage == 'coverage'
+      shell: bash
       run: |
         if [ -f /home/runner/docker-images/"${COVERAGE_DOCKER_IMAGE}" ]; then
           docker load -i /home/runner/docker-images/"${COVERAGE_DOCKER_IMAGE}"
@@ -109,6 +112,7 @@ runs:
         fi
     - name: Load or pull phan docker image
       if: matrix.stage == 'phan'
+      shell: bash
       run: |
         if [ -f /home/runner/docker-images/"${PHAN_DOCKER_IMAGE}" ]; then
           docker load -i /home/runner/docker-images/"${PHAN_DOCKER_IMAGE}"
@@ -122,6 +126,7 @@ runs:
         path: /home/runner/src
         key: ${{ runner.os }}-${{ env.MEDIAWIKI_VERSION }}-${{ hashFiles('.github/workflows/dependencies') }}
     - name: Download MediaWiki and extensions
+      shell: bash
       run: |
         cd /home/runner
         if [ ! -d src ]; then
@@ -195,6 +200,7 @@ runs:
         php-version: '7.4'
     - name: Composer install
       if: ${{ matrix.stage == 'phan' }}
+      shell: bash
       run: |
         composer install --prefer-dist --no-progress --no-interaction # $GITHUB_WORKSPACE
     - name: Setup Node.js environment
@@ -204,12 +210,14 @@ runs:
         cache: 'npm'
 
     - name: Run npm because Quibble is not compatible with yarn.
+      shell: bash
       run: |
         if [ -f yarn.lock ]; then
           npm install
         fi
 
     - name: Main Test
+      shell: bash
       run: |
         cd /home/runner
         # Move our repository
@@ -281,6 +289,7 @@ runs:
         directory: /home/runner/cover
 
     - name: Tear down
+      shell: bash
       run: |
         cd /home/runner
         sudo rm -rf "src/${{ env.TYPE }}s/${{ env.EXTENSION_NAME }}"
