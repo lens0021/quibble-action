@@ -25,6 +25,16 @@ branch_rules = {
             'CommunityConfigurationExample': 'Does not exist on REL1_42',
         },
     },
+    'REL1_43': {
+        'exclude': {
+            'CheckUser': 'https://github.com/femiwiki/femiwiki/issues/403',
+        },
+    },
+    'master': {
+        'exclude': {
+            'CheckUser': 'https://github.com/femiwiki/femiwiki/issues/403',
+        },
+    },
     'only': {
         'DiscussionTools': {
             'branches': ['master'],
