@@ -228,7 +228,7 @@ runs:
           npm install
         fi
 
-    - name: Main Test
+    - name: Prepare directories
       shell: bash
       run: |
         cd /home/runner
@@ -239,8 +239,12 @@ runs:
         # https://github.com/femiwiki/.github/issues/3
         sudo chown -R nobody:nogroup src cache
         sudo chown $(id -u):$(id -g) src cache
-        # Composer install
+
+    - name: Composer install
+      shell: bash
+      run: |
         if [ "${{ inputs.stage }}" == 'phan' ] || [ "${{ inputs.stage }}" == 'coverage' ]; then
+          cd /home/runner
           docker run \
             --entrypoint quibble-with-supervisord \
             -e "ZUUL_PROJECT=mediawiki/${{ env.TYPE }}s/${{ env.EXTENSION_NAME }}" \
@@ -254,6 +258,10 @@ runs:
             $DEPENDENCIES
         fi
 
+    - name: Main Test
+      shell: bash
+      run: |
+        cd /home/runner
         if [ "${{ inputs.stage }}" == 'phan' ]; then
           docker run \
             -e "THING_SUBNAME=${{ env.TYPE }}s/${{ env.EXTENSION_NAME }}" \
