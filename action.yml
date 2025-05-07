@@ -218,13 +218,6 @@ runs:
         node-version: '16'
         cache: 'npm'
 
-    - name: Run npm because Quibble is not compatible with yarn.
-      shell: bash
-      run: |
-        if [ -f yarn.lock ]; then
-          npm install
-        fi
-
     - name: Prepare directories
       shell: bash
       run: |
