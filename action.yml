@@ -16,6 +16,8 @@ inputs:
     default: REL1_43
   stage:
     default: composer-test
+  exclude-known-failures:
+    default: true
 outputs:
   coverage:
     value: /home/runner/cover
@@ -66,7 +68,16 @@ runs:
           curl -sLO https://raw.githubusercontent.com/wikimedia/integration-config/master/zuul/phan_dependencies.yaml
           curl -sLO https://raw.githubusercontent.com/wikimedia/integration-config/master/zuul/parameter_functions.py
           curl -sLO https://raw.githubusercontent.com/lens0021/quibble-action/refs/heads/main/resolve_dependencies.py
-          echo "DEPENDENCIES=$(python3 resolve_dependencies.py dependencies)" >> $GITHUB_ENV
+          DEPENDENCIES="$(python3 resolve_dependencies.py dependencies)"
+          if [ "${{ inputs.exclude-known-failures }}" == 'true' ]; then
+            if [ "${{ inputs.mediawiki-version }}" == 'master' ]; then
+              DEPENDENCIES="$(echo "$DEPENDENCIES" | grep -v /CheckUser$)"
+            elif [ "${{ inputs.mediawiki-version }}" == 'REL1_43' ]; then
+              DEPENDENCIES="$(echo "$DEPENDENCIES" | grep -v /CheckUser$)"
+            fi
+          fi
+          DEPENDENCIES="$(echo $DEPENDENCIES | tr '\n' ' ')"
+          echo "DEPENDENCIES=${DEPENDENCIES}" >> $GITHUB_ENV
         fi
 
     - name: Cache quibble docker image
