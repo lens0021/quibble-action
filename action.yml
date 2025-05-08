@@ -18,6 +18,8 @@ inputs:
     default: composer-test
   exclude-known-failures:
     default: true
+  cache-key:
+    default: true
 outputs:
   coverage:
     value: /home/runner/cover
@@ -87,7 +89,7 @@ runs:
       uses: actions/cache@v3
       with:
         path: /home/runner/docker-images/${{ inputs.quibble-docker-image }}
-        key: ${{ inputs.quibble-docker-image }}:${{ env.QUIBBLE_DOCKER_LATEST_TAG }}
+        key: ${{ inputs.quibble-docker-image }}:${{ env.QUIBBLE_DOCKER_LATEST_TAG }}-${{ inputs.cache-key }}
 
     - shell: bash
       run: |
@@ -103,14 +105,14 @@ runs:
       uses: actions/cache@v3
       with:
         path: /home/runner/docker-images/${{ inputs.coverage-docker-image }}
-        key: ${{ inputs.coverage-docker-image }}:${{ env.COVERAGE_DOCKER_LATEST_TAG }}
+        key: ${{ inputs.coverage-docker-image }}:${{ env.COVERAGE_DOCKER_LATEST_TAG }}-${{ inputs.cache-key }}
 
     - name: Cache phan docker image
       if: inputs.stage == 'phan'
       uses: actions/cache@v3
       with:
         path: /home/runner/docker-images/${{ inputs.env.phan-docker-image  }}
-        key: ${{ inputs.phan-docker-image }}:${{ env.PHAN_DOCKER_LATEST_TAG }}
+        key: ${{ inputs.phan-docker-image }}:${{ env.PHAN_DOCKER_LATEST_TAG }}-${{ inputs.cache-key }}
 
     - if: inputs.stage == 'coverage'
       shell: bash
@@ -136,7 +138,7 @@ runs:
       uses: actions/cache@v3
       with:
         path: /home/runner/src
-        key: ${{ runner.os }}-${{ inputs.mediawiki-version }}-${{ hashFiles('.github/workflows/dependencies') }}
+        key: ${{ runner.os }}-${{ inputs.mediawiki-version }}-${{ hashFiles('.github/workflows/dependencies') }}-${{ inputs.cache-key }}
 
     - shell: bash
       run: |
@@ -205,7 +207,7 @@ runs:
       uses: actions/cache@v3
       with:
         path: /home/runner/cache
-        key: ${{ runner.os }}-${{ inputs.mediawiki-version }}-${{ hashFiles('**/*.lock') }}
+        key: ${{ runner.os }}-${{ inputs.mediawiki-version }}-${{ hashFiles('**/*.lock') }}-${{ inputs.cache-key }}
 
     - uses: shivammathur/setup-php@v2
       if: ${{ inputs.stage == 'phan' }}
